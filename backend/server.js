@@ -21,12 +21,18 @@ app.get("/api/cheapest-now", async (req, res) => {
     const response = await axios.get(url);
     const stations = response.data.stations;
     if (stations && stations.length > 0) {
-      const cheapest = stations[0];
-      res.json({
-        name: cheapest.name,
-        price: cheapest.price,
-        address: cheapest.street + ", " + cheapest.place,
-      });
+     const availableStations = stations.filter(station => station.price !== null);
+if (availableStations.length > 0) {
+  const cheapest = availableStations[0];
+  res.json({
+    name: cheapest.name,
+    price: cheapest.price,
+    address: cheapest.street + ", " + cheapest.place,
+  });
+} else {
+  res.status(404).send("Keine Tankstellen mit verfügbaren Preisen gefunden.");
+}
+
     } else {
       res.status(404).send("Keine Tankstellen gefunden.");
     }
